@@ -8,63 +8,63 @@ import easygui as gui
 address = os.getcwd()
 #import win32com.client as win32
 
-###########################################这段代码是把txt转换成xlsx###########################################
+###########################################convert .xls to .xlsx ###########################################
 with open('Active Listings Report.txt','r',encoding='gbk',errors='ignore') as f:
     data=f.readlines()
 print(len(data))
 
-# 在内存中创建一个workbook对象，而且会至少创建一个 worksheet
+# create a workbook
 wb3 = openpyxl.Workbook()
  
-#获取当前活跃的worksheet,默认就是第一个worksheet
+#open the first one workbook
 ws3 = wb3.active
 for i1 in data:
     ws3.append(i1.split('\t'))
 wb3.save("Active Listings Report.xlsx")
-#print('保存完毕')
+#print('save')
 #print('File .txt convert .xlsx successful!!')
 
-###########################################读取Bundles和searchresults##################################
-df1 = pd.read_excel('Bundles.xlsx') #读取第一个文件
-df2 = pd.read_excel('searchresults.xlsx') #读取第二个文件
+###########################################Open Bundles.xlsx and searchresults.xlsx ##################################
+df1 = pd.read_excel('Bundles.xlsx') 
+df2 = pd.read_excel('searchresults.xlsx') 
             
 
-df2 = df2.drop(df2.columns[[2,3]], axis = 1) #将第二个文件的3，4竖列删掉
+df2 = df2.drop(df2.columns[[2,3]], axis = 1) #将第二个文件的3，4竖列删掉 delete column 2, 3 of searchresults.xlsx 
 
-horizontal_stack = pd.concat([df1, df2], axis = 1) #将两个文件合并在一起
-horizontal_stack.insert(8,'0', 0) #在第7列首行加入“产品编号”
-horizontal_stack.insert(9, '1', 0) #在第8列加入
-horizontal_stack.insert(10, '2', 0) #在第九列加入
-horizontal_stack.insert(11, '3', 0) #在第十列加入
-horizontal_stack.insert(12, '4', 0) #在第十一列加入
-horizontal_stack.insert(13, '5', 0) #在第12列加入
-horizontal_stack.insert(14, '6', 0) #在第13列加入
-horizontal_stack.insert(15, '7', 0) #在第14列加入
-horizontal_stack.insert(17, '8', 0) #在第16列加入
-#horizontal_stack.insert(21, '9', 0) #在第15列加入
+horizontal_stack = pd.concat([df1, df2], axis = 1) #combine Bundles.xlsx and searchresults.xlsx
+horizontal_stack.insert(8,'0', 0) #add a empty column at 7th
+horizontal_stack.insert(9, '1', 0) #add a empty column at 8th
+horizontal_stack.insert(10, '2', 0) #add a empty column at 9th
+horizontal_stack.insert(11, '3', 0) #add a empty column at 10th
+horizontal_stack.insert(12, '4', 0) #add a empty column at 11th
+horizontal_stack.insert(13, '5', 0) #add a empty column at 12th
+horizontal_stack.insert(14, '6', 0) #add a empty column at 13th
+horizontal_stack.insert(15, '7', 0) #add a empty column at 14th
+horizontal_stack.insert(17, '8', 0) #add a empty column at 15th
+#horizontal_stack.insert(21, '9', 0) #add a empty column at 16th
             
-#将文件储存为test_Inventory.xlsx
+#save the file and create name test_Inventory.xlsx
 export_excel = horizontal_stack.to_excel(address + '\\test_Inventory.xlsx', index = None, header = True)
 
-###########################################打开test，not sfp，active listing##########################    
-wb = load_workbook(address + '\\test_Inventory.xlsx') #读取excel文件test_Inventory
-ws = wb.active #打开工作表
-wb2 = load_workbook(address + '\\Not SFP.xlsx') #打开Not SFP文件
-ws2 = wb2.active #打开Not SFP文件
+###########################################Open test_Inventory.xlsx，not SFP.xlsx，active listing.xlsx ##########################    
+wb = load_workbook(address + '\\test_Inventory.xlsx') 
+ws = wb.active 
+wb2 = load_workbook(address + '\\Not SFP.xlsx') 
+ws2 = wb2.active 
 wb4 = load_workbook(address + '\\Active Listings Report.xlsx')
 ws4 = wb4.active
 wb6 = load_workbook(address + '\\Amazon Shipping Template Empty.xlsx')
 ws6 = wb6.active
 
-###########################################计算test文件有多少行##########################################
+###########################################calculating how many row in test_Inventory file ##########################################
 num = 1
-while 1: #计算有多少行
+while 1: 
     cell = ws.cell(row=num, column=1).value
     if cell:
         num = num +1
     else:
         break
-###########################################计算SFP###########################################
+###########################################calculating SFP ###########################################
 dic_O = {}
 dic_M = {}
 dic_K = {}
@@ -100,7 +100,7 @@ for each in range(num):
 ws["J1"].value = 1
 ws["K1"].value = 1
 ws["K1"].value = 1
-#################################计算特殊bundles##################################
+#################################Calculating Bundles##################################
 next_number = 2
 for each1 in range(num):
     if ws["A%d" % (each1 + 1)].value == None:
@@ -176,7 +176,7 @@ ws["M1"].value = "组合库存：Ontario"
 ws["N1"].value = "组合库存：Memphis"
 ws["O1"].value = "组合库存：Kansas City"
 
-###########################################计算单品sfp###########################################
+###########################################Calculating single SFP ###########################################
 ws['T1'].value = 0
 ws['U1'].value = 0
 ws['V1'].value = 0
@@ -205,7 +205,7 @@ ws['U1'].value = 'Memphis'
 ws['V1'].value = 'Kansas City'
 #print('Single products SFP calculates successful！')
 
-###########################################计算某些不发sfp的产品###########################################
+###########################################calculating some products cannot SFP ###########################################
 rowlist = []
 for row in ws2.rows:
     for cell in row:
@@ -217,7 +217,7 @@ for w in range(ws.max_row):
 ws['W1'].value = '单品SFP'
 #print('Not SFP calculates successful！')
 
-###########################################计算quantity###########################################
+###########################################Calculating quantity ###########################################
 active_list_report = {}
 for d in range(ws4.max_row):
     active_list_report[ws4["D%d" % (d + 1)].value] = ws4["F%d" % (d + 1)].value
@@ -227,7 +227,7 @@ for c in range(ws.max_row):
 ws["C1"].value = "Quantity"
 ws["S1"].value = "quantity"
 
-###########################################加入item-name###########################################
+###########################################Add item-name###########################################
 dic_item_name = {}
 for b in range(ws4.max_row):
     dic_item_name[ws4["D%d" % (b +1)].value] = ws4["A%d" % (b + 1)].value
@@ -240,7 +240,7 @@ for r in range(ws.max_row):
 ws["B1"].value = "Item-name"
 ws["R1"].value =  "item-name"
 
-###########################################导入Amazon Shipping Template 模板#####################################################
+###########################################Import Amazon Shipping Template #####################################################
 Name_sku = []
 item_name_list = []
 SFP_list = []
@@ -277,7 +277,7 @@ for amazonlist5 in SFP_list:
     z += 1
 
 
-###########################################保存#####################################################
+###########################################Save#####################################################
 today_time = datetime.date.today()
 wb.save(address + '\\test_Inventory.xlsx')
 wb6.save(address + '\\Amazon Shipping Template-%s.xlsx' % (today_time))
